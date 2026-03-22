@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Invitation</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    text-align: center;
+    background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+    color: white;
+    padding-top: 120px;
+}
+
+h1 {
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+p {
+    font-size: 20px;
+    margin: 10px;
+}
+
+button {
+    padding: 15px 25px;
+    font-size: 18px;
+    margin: 15px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+#yes {
+    background-color: #2ecc71;
+}
+
+#yes:hover {
+    transform: scale(1.1);
+}
+
+#no {
+    background-color: #e74c3c;
+    position: absolute;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Hey Denis</h1>
+<p>I’d like to invite you to my place this Wednesday.</p>
+<p>Menu: Borscht 🍲</p>
+<p>Are you in?</p>
+
+<button id="yes" onclick="yesClicked()">Yes</button>
+<button id="no" onmouseover="moveButton()">No</button>
+
+<audio id="music" autoplay loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+</audio>
+
+<script>
+function yesClicked() {
+    document.body.innerHTML = `
+        <h1>Nice. See you Wednesday.</h1>
+        <p>Don’t be late 🙂</p>
+    `;
+}
+
+function moveButton() {
+    const button = document.getElementById("no");
+    const x = Math.random() * (window.innerWidth - 100);
+    const y = Math.random() * (window.innerHeight - 50);
+    button.style.left = x + "px";
+    button.style.top = y + "px";
+}
+</script>
+
+</body>
+</html>
