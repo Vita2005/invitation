@@ -14,14 +14,12 @@ body {
     text-align: center;
 }
 
-/* ✨ частинки */
 canvas {
     position: fixed;
     top: 0;
     left: 0;
 }
 
-/* контент */
 .container {
     position: relative;
     z-index: 2;
@@ -36,7 +34,6 @@ canvas {
 
 h1 {
     font-size: 38px;
-    letter-spacing: 2px;
 }
 
 p {
@@ -54,7 +51,6 @@ p:nth-child(4) { animation-delay: 1.5s; }
     to {opacity: 1;}
 }
 
-/* кнопки */
 button {
     padding: 15px 35px;
     font-size: 18px;
@@ -65,7 +61,6 @@ button {
     transition: 0.3s;
 }
 
-/* YES */
 #yes {
     background: #00ff99;
     box-shadow: 0 0 20px #00ff99;
@@ -76,21 +71,20 @@ button {
     box-shadow: 0 0 40px #00ffcc;
 }
 
-/* NO */
 #no {
     background: #ff0033;
     position: absolute;
     box-shadow: 0 0 20px #ff0033;
 }
-
 </style>
 </head>
 
 <body>
 
-<canvas id="particles"></canvas>
+<canvas id="bgParticles"></canvas>
+<canvas id="fireworks"></canvas>
 
-<div class="container">
+<div class="container" id="content">
     <h1>Invitation</h1>
     <p>You are invited to Nesodden this Wednesday.</p>
     <p>Expect a unique boat tour…</p>
@@ -98,75 +92,109 @@ button {
 
     <h2 style="margin-top:30px;">Do you agree?</h2>
 
-    <button id="yes" onclick="yesClicked()">Yes</button>
+    <button id="yes" onclick="startFireworks()">Yes</button>
     <button id="no" onmouseover="moveButton()">No</button>
 </div>
 
-<audio autoplay loop>
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
-</audio>
-
 <script>
-// 😏 YES
-function yesClicked() {
-    document.body.innerHTML = `
-        <h1 style="margin-top:150px; animation: fadeIn 1s;">
-        Perfect. See you Wednesday.
-        </h1>
-    `;
-}
-
-// 😄 NO тікає і зменшується
+// 😄 NO тікає
 function moveButton() {
     const button = document.getElementById("no");
-    const x = Math.random() * (window.innerWidth - 100);
-    const y = Math.random() * (window.innerHeight - 50);
-
-    button.style.left = x + "px";
-    button.style.top = y + "px";
-
-    button.style.transform = "scale(0.8)";
+    button.style.left = Math.random() * (window.innerWidth - 100) + "px";
+    button.style.top = Math.random() * (window.innerHeight - 50) + "px";
 }
 
-// ✨ частинки (вогники)
-const canvas = document.getElementById("particles");
-const ctx = canvas.getContext("2d");
+// 🎆 САЛЮТ
+function startFireworks() {
+    document.getElementById("content").innerHTML =
+        "<h1 style='margin-top:150px;'>Perfect. See you Wednesday.</h1>";
 
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
+    const canvas = document.getElementById("fireworks");
+    const ctx = canvas.getContext("2d");
 
-let particles = [];
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
 
-for (let i = 0; i < 100; i++) {
-    particles.push({
-        x: Math.random() * canvas.width,
-        y: Math.random() * canvas.height,
-        size: Math.random() * 3,
-        speedX: (Math.random() - 0.5) * 1.5,
-        speedY: (Math.random() - 0.5) * 1.5
+    let particles = [];
+
+    function createExplosion(x, y) {
+        for (let i = 0; i < 80; i++) {
+            particles.push({
+                x: x,
+                y: y,
+                angle: Math.random() * Math.PI * 2,
+                speed: Math.random() * 5 + 2,
+                life: 100
+            });
+        }
+    }
+
+    function animate() {
+        ctx.fillStyle = "rgba(0,0,0,0.2)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        particles.forEach((p, i) => {
+            p.x += Math.cos(p.angle) * p.speed;
+            p.y += Math.sin(p.angle) * p.speed;
+            p.life--;
+
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, 2, 0, Math.PI * 2);
+            ctx.fillStyle = "hsl(" + Math.random() * 360 + ",100%,50%)";
+            ctx.fill();
+
+            if (p.life <= 0) particles.splice(i, 1);
+        });
+
+        requestAnimationFrame(animate);
+    }
+
+    setInterval(() => {
+        createExplosion(
+            Math.random() * canvas.width,
+            Math.random() * canvas.height / 2
+        );
+    }, 500);
+
+    animate();
+}
+
+// ✨ фон-вогники
+const canvasBg = document.getElementById("bgParticles");
+const ctxBg = canvasBg.getContext("2d");
+
+canvasBg.width = window.innerWidth;
+canvasBg.height = window.innerHeight;
+
+let bgParticles = [];
+
+for (let i = 0; i < 80; i++) {
+    bgParticles.push({
+        x: Math.random() * canvasBg.width,
+        y: Math.random() * canvasBg.height,
+        size: Math.random() * 2,
+        speedX: (Math.random() - 0.5),
+        speedY: (Math.random() - 0.5)
     });
 }
 
-function animate() {
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
+function animateBg() {
+    ctxBg.clearRect(0, 0, canvasBg.width, canvasBg.height);
 
-    particles.forEach(p => {
+    bgParticles.forEach(p => {
         p.x += p.speedX;
         p.y += p.speedY;
 
-        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
-        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
-
-        ctx.beginPath();
-        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
-        ctx.fillStyle = "white";
-        ctx.fill();
+        ctxBg.beginPath();
+        ctxBg.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctxBg.fillStyle = "white";
+        ctxBg.fill();
     });
 
-    requestAnimationFrame(animate);
+    requestAnimationFrame(animateBg);
 }
 
-animate();
+animateBg();
 </script>
 
 </body>
