@@ -6,16 +6,36 @@
 
 <style>
 body {
+    margin: 0;
+    overflow: hidden;
     font-family: Arial, sans-serif;
-    text-align: center;
-    background: linear-gradient(135deg, #1e1e1e, #3a3a3a);
+    background: radial-gradient(circle at center, #1a1a1a, #000000);
     color: white;
-    padding-top: 120px;
+    text-align: center;
+}
+
+/* ✨ ВОГНИКИ */
+canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+/* текст */
+.container {
+    position: relative;
+    z-index: 2;
+    margin-top: 120px;
+    animation: fadeIn 2s ease;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(40px);}
+    to {opacity: 1; transform: translateY(0);}
 }
 
 h1 {
-    font-size: 32px;
-    margin-bottom: 20px;
+    font-size: 36px;
 }
 
 p {
@@ -23,53 +43,69 @@ p {
     margin: 10px;
 }
 
+/* кнопки */
 button {
-    padding: 15px 25px;
+    padding: 15px 30px;
     font-size: 18px;
-    margin: 15px;
+    margin: 20px;
     border: none;
-    border-radius: 8px;
+    border-radius: 12px;
     cursor: pointer;
-    transition: 0.2s;
+    transition: 0.3s;
 }
 
+/* YES */
 #yes {
-    background-color: #2ecc71;
+    background: #00e676;
+    box-shadow: 0 0 15px #00e676;
 }
 
 #yes:hover {
-    transform: scale(1.1);
+    transform: scale(1.2);
+    box-shadow: 0 0 30px #00ff88;
 }
 
+/* NO */
 #no {
-    background-color: #e74c3c;
+    background: #ff1744;
     position: absolute;
+    box-shadow: 0 0 15px #ff1744;
 }
+
 </style>
 </head>
 
 <body>
 
-<h1>Hey Denis</h1>
-<p>I’d like to invite you to my place this Wednesday.</p>
-<p>Menu: Borscht 🍲</p>
-<p>Are you in?</p>
+<canvas id="particles"></canvas>
 
-<button id="yes" onclick="yesClicked()">Yes</button>
-<button id="no" onmouseover="moveButton()">No</button>
+<div class="container">
+    <h1>Invitation</h1>
+    <p>This Wednesday.</p>
+    <p>At my place.</p>
+    <p>Menu: Borscht 🍲</p>
+    <p>Are you coming?</p>
 
-<audio id="music" autoplay loop>
-  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+    <button id="yes" onclick="yesClicked()">Yes</button>
+    <button id="no" onmouseover="moveButton()">No</button>
+</div>
+
+<audio autoplay loop>
+  <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" type="audio/mpeg">
 </audio>
 
 <script>
+// 😏 YES
 function yesClicked() {
     document.body.innerHTML = `
-        <h1>Nice. See you Wednesday.</h1>
-        <p>Don’t be late 🙂</p>
+        <h1 style="margin-top:150px; animation: fadeIn 1s;">
+        Good choice.
+        See you Wednesday.
+        </h1>
     `;
 }
 
+// 😄 NO тікає
 function moveButton() {
     const button = document.getElementById("no");
     const x = Math.random() * (window.innerWidth - 100);
@@ -77,6 +113,46 @@ function moveButton() {
     button.style.left = x + "px";
     button.style.top = y + "px";
 }
+
+// ✨ ВОГНИКИ
+const canvas = document.getElementById("particles");
+const ctx = canvas.getContext("2d");
+
+canvas.width = window.innerWidth;
+canvas.height = window.innerHeight;
+
+let particles = [];
+
+for (let i = 0; i < 80; i++) {
+    particles.push({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height,
+        size: Math.random() * 3,
+        speedX: (Math.random() - 0.5) * 1,
+        speedY: (Math.random() - 0.5) * 1
+    });
+}
+
+function animate() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    particles.forEach(p => {
+        p.x += p.speedX;
+        p.y += p.speedY;
+
+        if (p.x < 0 || p.x > canvas.width) p.speedX *= -1;
+        if (p.y < 0 || p.y > canvas.height) p.speedY *= -1;
+
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fillStyle = "white";
+        ctx.fill();
+    });
+
+    requestAnimationFrame(animate);
+}
+
+animate();
 </script>
 
 </body>
